@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const cors = require('cors');
 
 const uri = "mongodb+srv://ia03nelepindmitriy_db_user:QRQVcqXo7L97W2jX@gridnotes.8qulvdy.mongodb.net/?retryWrites=true&w=majority&appName=GRIDNotes";
 const client = new MongoClient(uri, {
@@ -13,6 +14,8 @@ const client = new MongoClient(uri, {
 
 const app = express();
 app.use(bodyParser.json());
+
+app.use(cors({ origin: 'https://grid-lab1-frontend-7mmt.vercel.app' }));
 
 let notesCollection;
 
