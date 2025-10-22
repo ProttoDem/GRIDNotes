@@ -15,7 +15,7 @@ const client = new MongoClient(uri, {
 const app = express();
 app.use(bodyParser.json());
 
-app.use(cors({ origin: 'https://grid-lab1-frontend-7mmt.vercel.app' }));
+	app.use(cors({ origin: ['https://grid-lab1-frontend-7mmt.vercel.app', 'http://localhost:3000'] }));
 
 let notesCollection;
 
