@@ -87,8 +87,11 @@ async function startServer() {
 			}
 		});
 
-		const PORT = 8080;
-		app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+        const port = process.env.PORT || 8080;
+        app.listen(port, () => {
+            console.log(`Server running on port ${port}`);
+        });
+
 	} catch (err) {
 		console.error(err);
 		process.exit(1);
