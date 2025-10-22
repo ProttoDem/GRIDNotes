@@ -1,0 +1,22 @@
+# Node.js
+node_modules/
+
+# Environment
+.env
+
+# SSL certificates
+key.pem
+cert.pem
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# npm debug files
+npm-debug.log*
+
+# VS Code
+.vscode/
