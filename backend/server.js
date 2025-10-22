@@ -53,7 +53,7 @@ async function startServer() {
 		// Read all
 		app.get('/notes', async (req, res) => {
 			try {
-				const notes = await notesCollection.find().toArray();
+				const notes = await notesCollection.find().sort({ CreatedAt: -1 }).toArray();
 				res.json(notes);
 			} catch (err) {
 				res.status(500).json({ error: err.message });
