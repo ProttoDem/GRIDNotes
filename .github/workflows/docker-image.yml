@@ -1,5 +1,9 @@
 name: Docker Image CI
 
+permissions:
+  id-token: write
+  contents: read
+
 on:
   push:
     branches: [ "main" ]
@@ -7,12 +11,31 @@ on:
     branches: [ "main" ]
 
 jobs:
-
-  build:
-
+  build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build ./backend --file ./backend/Dockerfile --tag grid-lab-image:$(date +%s)
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build ./backend --file ./backend/Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/grid-lab-image:latest
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Push Docker image
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/grid-lab-image:latest
+
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GCLOUD_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Deploy on Google Cloud VM
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.GCLOUD_VM_USER }}@${{ secrets.GCLOUD_VM_HOST }} '
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/grid-lab-image:latest &&
+            docker stop grid-lab-container || true &&
+            docker rm grid-lab-container || true &&
+            docker run -d --name grid-lab-container -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/grid-lab-image:latest
+          '
