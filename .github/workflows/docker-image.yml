@@ -25,17 +25,3 @@ jobs:
       - name: Push Docker image
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/grid-lab-image:latest
 
-      - name: Set up SSH key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.GCLOUD_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-
-      - name: Deploy on Google Cloud VM
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.GCLOUD_VM_USER }}@${{ secrets.GCLOUD_VM_HOST }} '
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/grid-lab-image:latest &&
-            docker stop grid-lab-container || true &&
-            docker rm grid-lab-container || true &&
-            docker run -d --name grid-lab-container -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/grid-lab-image:latest
-          '
